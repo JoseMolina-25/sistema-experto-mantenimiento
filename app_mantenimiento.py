@@ -96,8 +96,11 @@ def evaluar_maquina(h, t, v):
     sim.input["horas_uso"] = np.clip(h, 0, 500)
     sim.input["temperatura"] = np.clip(t, 20, 120)
     sim.input["vibracion"] = np.clip(v, 0, 10)
+    try:
     sim.compute()
     score = sim.output["urgencia"]
+except:
+    return 0, "SIN ACCIÓN", "Combinación fuera de las reglas del sistema."
 
     if score < 25:
         etiqueta = "SIN ACCIÓN"
