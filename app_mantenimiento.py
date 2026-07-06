@@ -99,7 +99,7 @@ def evaluar_maquina(h, t, v):
     try:
     sim.compute()
     score = sim.output["urgencia"]
-    except:
+    except Exception:
     return 0, "SIN ACCIÓN", "Combinación fuera de las reglas del sistema."
 
     if score < 25:
