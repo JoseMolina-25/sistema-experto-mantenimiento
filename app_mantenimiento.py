@@ -101,10 +101,10 @@ def evaluar_maquina(h, t, v):
     sim.input["vibracion"] = float(np.clip(v, 0, 10))
 
     try:
-    sim.compute()
-    score = sim.output.get("urgencia", 0)
+        sim.compute()
+        score = sim.output.get("urgencia", 0)
     except Exception:
-    score = 0
+        return 0, "SIN ACCIÓN", "Combinación fuera de las reglas del sistema."
 
     if score < 25:
         etiqueta = "SIN ACCIÓN"
