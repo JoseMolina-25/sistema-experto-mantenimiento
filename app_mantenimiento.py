@@ -72,6 +72,8 @@ def construir_sistema():
         ctrl.Rule(temperatura["critica"], urgencia["urgente"]),
         ctrl.Rule(vibracion["alta"], urgencia["urgente"]),
         ctrl.Rule(horas_uso["baja"] & temperatura["normal"] & vibracion["alta"], urgencia["urgente"]),
+        ctrl.Rule(horas_uso["alta"] &temperatura["critica"] &vibracion["alta"],urgencia["urgente"],
+)
     ]
     return ctrl.ControlSystem(reglas)
 
@@ -93,14 +95,16 @@ def evaluar_maquina(h, t, v):
         )
 
     sim = ctrl.ControlSystemSimulation(sistema_control)
-    sim.input["horas_uso"] = np.clip(h, 0, 500)
-    sim.input["temperatura"] = np.clip(t, 20, 120)
-    sim.input["vibracion"] = np.clip(v, 0, 10)
+
+    sim.input["horas_uso"] = float(np.clip(h, 0, 500))
+    sim.input["temperatura"] = float(np.clip(t, 20, 120))
+    sim.input["vibracion"] = float(np.clip(v, 0, 10))
+
     try:
     sim.compute()
-    score = sim.output["urgencia"]
+    score = sim.output.get("urgencia", 0)
     except Exception:
-    return 0, "SIN ACCIÓN", "Combinación fuera de las reglas del sistema."
+    score = 0
 
     if score < 25:
         etiqueta = "SIN ACCIÓN"
@@ -210,7 +214,16 @@ Tg, Vg = np.meshgrid(temp_range, vib_range)
 Z = np.zeros_like(Tg)
 for i in range(Tg.shape[0]):
     for j in range(Tg.shape[1]):
-        s, _, _ = evaluar_maquina(h, Tg[i, j], Vg[i, j])
+
+        try:
+            s, _, _ = evaluar_maquina(
+                h,
+                float(Tg[i, j]),
+                float(Vg[i, j])
+            )
+        except Exception:
+            s = 0
+
         Z[i, j] = s
 
 fig = go.Figure(data=[go.Surface(x=temp_range, y=vib_range, z=Z, colorscale="Turbo")])
