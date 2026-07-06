@@ -2,5 +2,6 @@ streamlit
 numpy
 matplotlib
 scikit-fuzzy
+scipy
 plotly
 pandas
